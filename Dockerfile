@@ -14,4 +14,3 @@ RUN pip install --no-cache-dir mysqlclient -r requirements.txt
 COPY . .
 
 CMD ["python", "app.py"]
-```
