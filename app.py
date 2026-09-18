@@ -1,3 +1,4 @@
+
 import os
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_mysqldb import MySQL
@@ -13,6 +14,7 @@ app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'default_db')
 # Initialize MySQL
 mysql = MySQL(app)
 
+
 def init_db():
     with app.app_context():
         cur = mysql.connection.cursor()
@@ -22,8 +24,17 @@ def init_db():
             message TEXT
         );
         ''')
-        mysql.connection.commit()  
+        mysql.connection.commit()
         cur.close()
+
+
+# Health Check Endpoint
+@app.route('/health')
+def health():
+    return jsonify({
+        'status': 'healthy'
+    })
+
 
 @app.route('/')
 def hello():
@@ -33,15 +44,26 @@ def hello():
     cur.close()
     return render_template('index.html', messages=messages)
 
+
 @app.route('/submit', methods=['POST'])
 def submit():
     new_message = request.form.get('new_message')
+
     cur = mysql.connection.cursor()
-    cur.execute('INSERT INTO messages (message) VALUES (%s)', [new_message])
+    cur.execute(
+        'INSERT INTO messages (message) VALUES (%s)',
+        [new_message]
+    )
     mysql.connection.commit()
     cur.close()
-    return jsonify({'message': new_message})
+
+    return jsonify({
+        'message': new_message
+    })
+
 
 if __name__ == '__main__':
     init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+
