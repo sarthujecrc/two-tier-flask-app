@@ -20,7 +20,7 @@ services:
       start_period: 60s
          
   flask-app:
-    image: sarthu/flask-app
+    image: sarthu/flaskapplication
     ports:
       - "5000:5000"
     environment:
